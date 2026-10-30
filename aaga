@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kombajn Nauczyciela 5w1 - Słoneczka - Kompas Jutra 2026</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
+
+        :root {
+            --primary: #f59e0b;
+            --primary-light: #fef3c7;
+            --secondary: #0ea5e9;
+            --secondary-light: #e0f2fe;
+            --accent: #f97316;
+            --accent-light: #ffedd5;
+            --text-dark: #334155;
+            --text-muted: #64748b;
+            --bg-color: #f8fafc;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        /* --- DRUKOWANIE --- */
+        @media print {
+            .no-print { display: none !important; }
+            body { padding: 0; background: white; }
+            .module-view { box-shadow: none; border: none; padding: 0; margin: 0; }
+            @page { margin: 15mm; }
+            .plan-table th { background-color: #eee !important; -webkit-print-color-adjust: exact; }
+        }
+
+        /* --- PANEL STEROWANIA --- */
+        .control-panel {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            border-top: 5px solid var(--primary);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+
+        .panel-header h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            background: var(--primary-light);
+            color: #d97706;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        select {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: var(--bg-color);
+            color: var(--text-dark);
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #d97706; }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-secondary:hover { background: #0284c7; }
+
+        /* --- ZAKŁADKI --- */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab:hover { background: var(--primary-light); color: var(--primary); }
+        .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+        /* --- WIDOKI DOKUMENTÓW --- */
+        .module-view {
+            display: none;
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .module-view.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        [contenteditable="true"] {
+            border-bottom: 1px dashed #cbd5e1;
+            outline: none;
+            transition: background 0.2s;
+        }
+        [contenteditable="true"]:hover, [contenteditable="true"]:focus {
+            background: #f1f5f9;
+            border-bottom: 1px solid var(--primary);
+        }
+
+        /* --- PLAN PRACY --- */
+        .print-document h2 { font-size: 1.1rem; color: #000; margin-bottom: 5px; text-align: center; font-weight: 700; }
+        .print-document p { color: #000; margin-bottom: 15px; font-size: 1rem; }
+        .plan-table { width: 100%; border-collapse: collapse; text-align: left; margin-bottom: 20px; font-family: 'Times New Roman', Times, serif; }
+        .plan-table th, .plan-table td { border: 1px solid #000; padding: 6px 8px; font-size: 0.95rem; color: #000; vertical-align: top; }
+        .plan-table th { background-color: #fff; font-weight: bold; text-align: center; font-size: 0.85rem; text-transform: uppercase; }
+        
+        .list-header { font-size: 1.1rem; font-weight: bold; color: #000; text-align: center; margin-top: 20px; margin-bottom: 10px; text-transform: uppercase; }
+        .print-document ol { padding-left: 25px; color: #000; font-size: 0.95rem; font-family: 'Times New Roman', Times, serif; }
+        .print-document ol li { margin-bottom: 6px; padding-left: 5px; }
+        .print-document ol li span.bold-start { font-weight: bold; }
+        .dynamic-theme { font-weight: 700; color: #000; text-decoration: underline; }
+
+        /* Pozostałe zakładki */
+        .doc-header { border-bottom: 3px solid var(--primary-light); padding-bottom: 15px; margin-bottom: 25px; }
+        .doc-header h2 { color: var(--text-dark); font-size: 1.6rem; margin-bottom: 10px; text-transform: uppercase; }
+        .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .info-card { background: var(--secondary-light); border-radius: 12px; padding: 20px; border-left: 4px solid var(--secondary); }
+        .info-card h4 { color: #0369a1; margin-bottom: 10px; font-size: 1.1rem; }
+        .styled-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .styled-table th, .styled-table td { border: 1px solid var(--border); padding: 12px; text-align: left; }
+        .styled-table th { background: var(--primary-light); color: #b45309; }
+    </style>
+</head>
+<body>
+
+    <!-- PANEL STEROWANIA -->
+    <div class="control-panel no-print">
+        <div class="panel-header">
+            <h1>☀️ Kombajn Nauczyciela 5w1: Grupa „Słoneczka” (4-latki)</h1>
+            <span class="badge">Kompas Jutra 2026</span>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Miesiąc</label>
+                <select id="monthSelect" onchange="updateWeeksAndThemes()"></select>
+            </div>
+            <div class="control-group">
+                <label>Tydzień</label>
+                <select id="weekSelect" onchange="updateThemes()"></select>
+            </div>
+            <div class="control-group" style="flex: 2;">
+                <label>Temat Tygodnia (Wybierz 1 z 5)</label>
+                <select id="themeSelect" onchange="renderData()"></select>
+            </div>
+            
+            <button class="btn btn-secondary" onclick="window.print()">🖨️ Drukuj widok</button>
+        </div>
+    </div>
+
+    <!-- ZAKŁADKI -->
+    <div class="tabs no-print">
+        <div class="tab active" onclick="switchTab('tabPlan', this)">1. Plan Pracy</div>
+        <div class="tab" onclick="switchTab('tabObservation', this)">2. Obserwacja</div>
+        <div class="tab" onclick="switchTab('tabParents', this)">3. Dla Rodziców</div>
+        <div class="tab" onclick="switchTab('tabExperience', this)">4. Rejestr Doświadczeń</div>
+        <div class="tab" onclick="switchTab('tabLesson', this)">5. Konspekt</div>
+    </div>
+
+    <!-- ZAWARTOŚĆ -->
+    <main id="contentArea">
+        
+        <!-- ZAKŁADKA 1: PLAN PRACY -->
+        <div id="tabPlan" class="module-view active">
+            <div class="print-document">
+                <h2>TYGODNIOWY PLAN DZIAŁAŃ WSPIERAJĄCYCH WSZECHSTRONNY ROZWÓJ<br>DZIECKA NA MIESIĄC <span id="planMonthName" style="text-transform: uppercase;"></span>, GRUPA II - „SŁONECZKA”</h2>
+                <p>
+                    <strong>Główny obszar badawczy (Temat):</strong> <span id="planTopicName" style="text-transform: uppercase;"></span><br>
+                    <strong>Czas realizacji:</strong> <span contenteditable="true">..................................................2026 r.</span>
+                </p>
+
+                <table class="plan-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">Dzień</th>
+                            <th style="width: 35%;">SYTUACJE I DOŚWIADCZENIA EDUKACYJNE</th>
+                            <th style="width: 30%;">ZAMIERZONE OSIĄGNIĘCIA (SPRAWCZOŚĆ)</th>
+                            <th style="width: 15%;">OBSZAR ROZWOJU (wg PP)</th>
+                            <th style="width: 15%;">KOMPETENCJE KLUCZOWE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="planTableBody">
+                        <!-- Generowane dynamicznie -->
+                    </tbody>
+                </table>
+
+                <div class="list-header">AKTYWNOŚĆ FIZYCZNA I NEUROMOTORYCZNA ZWIĄZANA Z TEMATEM:</div>
+                <ol id="planRuchoweList"></ol>
+
+                <div class="list-header">EDUKACJA TERENOWA I ZABAWY NA ŚWIEŻYM POWIETRZU:</div>
+                <ol id="planPowietrzeList"></ol>
+
+                <div class="list-header">SYTUACJE EDUKACYJNE ROZWIJAJĄCE KOMPETENCJE BADAWCZE:</div>
+                <ol id="planEdukacyjneList"></ol>
+            </div>
+        </div>
+
+        <!-- ZAKŁADKA 2: OBSERWACJA -->
+        <div id="tabObservation" class="module-view">
+            <div class="doc-header">
+                <h2>Karta Obserwacji Rozwoju i Sprawczości Dziecka (4 lata)</h2>
+                <p><strong>Grupa:</strong> „Słoneczka” | <strong>Nurt:</strong> „Kompas Jutra 2026”</p>
+                <p><strong>Imię i nazwisko dziecka:</strong> <span contenteditable="true">.............................................</span></p>
+            </div>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Obszar Rozwoju</th>
+                        <th style="width: 55%;">Kluczowe wskaźniki dla aktualnego bloku badawczego</th>
+                        <th style="width: 20%; text-align:center;">Stopień (W/Z/R)</th>
+                    </tr>
+                </thead>
+                <tbody id="obsTableBody">
+                    <tr>
+                        <td><strong>I. Rozwój Emocjonalny i Społeczny (Rezyliencja)</strong></td>
+                        <td contenteditable="true" id="obs1">Wykazuje wytrwałość w napotykanych trudnościach, aktywnie uczestniczy w rozmowach kierowanych, rozpoznaje granice własne i rówieśników.</td>
+                        <td style="text-align:center;" contenteditable="true">......</td>
+                    </tr>
+                    <tr>
+                        <td><strong>II. Rozwój Poznawczy (Język i Myślenie)</strong></td>
+                        <td contenteditable="true" id="obs2">Samodzielnie formułuje pytania badawcze ("dlaczego?", "jak to działa?"), kategoryzuje obiekty i dostrzega powiązania przyczynowo-skutkowe.</td>
+                        <td style="text-align:center;" contenteditable="true">......</td>
+                    </tr>
+                    <tr>
+                        <td><strong>III. Rozwój Fizyczny i Poznawczy (Badania i Konstruowanie)</strong></td>
+                        <td contenteditable="true" id="obs3">Inicjuje zabawę materiałami nieustrukturyzowanymi. Wykorzystuje proste polecenia na macie do układania wzorów, wykazuje inwencję twórczą.</td>
+                        <td style="text-align:center;" contenteditable="true">......</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ZAKŁADKA 3: DLA RODZICÓW -->
+        <div id="tabParents" class="module-view">
+            <div class="doc-header">
+                <h2>☀️ Raport Sprawczości „Słoneczek” – Informator dla Rodziców</h2>
+                <p><strong>Badany obszar tematyczny:</strong> <span id="parentTopicTitle" style="color: var(--primary); font-weight: 700;"></span></p>
+            </div>
+            <p>Drodzy Rodzice! W naszym przedszkolu edukacja to proces twórczego odkrywania. Zgodnie z założeniami <strong>Kompasu Jutra 2026</strong>, w tym tygodniu kładziemy nacisk na budowanie autonomii, samodzielne eksperymentowanie oraz rozwój umiejętności rozwiązywania problemów ze wsparciem facylitatora, bez użycia ekranów!</p>
+            
+            <div class="grid-2col">
+                <div class="info-card">
+                    <h4>🎯 Nad jakimi kompetencjami pracujemy?</h4>
+                    <ul id="parentGoals" style="padding-left: 20px;" contenteditable="true">
+                        <li>Rozwijamy <strong>myślenie algorytmiczne</strong> poprzez układanie kodów z symboli graficznych i rytmów na dywanie.</li>
+                        <li>Trenujemy <strong>uważność (relaksację)</strong> oraz techniki samoregulacji emocji w trudnych sytuacjach roboczych.</li>
+                        <li>Stymulujemy <strong>badawcze podejście</strong> – zadajemy pytania, obserwujemy zmiany, stawiamy hipotezy z wykorzystaniem narzędzi pomiarowych (lupy, wagi).</li>
+                        <li>Wzmacniamy motorykę poprzez <strong>edukację terenową</strong> w środowisku naturalnym.</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h4>✨ Rada „Kompasu Jutra” do zastosowania w domu:</h4>
+                    <p contenteditable="true" style="font-style: italic;">
+                        Zapytajcie dziś dziecko: "Z czym dzisiaj sobie poradziłeś/aś?". Pozwólcie na swobodną, brudzącą zabawę (np. przesypywanie mąki, tworzenie konstrukcji z kartonów) – budujemy w ten sposób wyobraźnię przestrzenną, odporność na błędy i poczucie sprawczości!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ZAKŁADKA 4: DOŚWIADCZENIA -->
+        <div id="tabExperience" class="module-view">
+             <div class="doc-header">
+                <h2>Rejestr Odkryć i Doświadczeń Badawczych</h2>
+                <p><strong>Grupa:</strong> 4-latki „Słoneczka” | Dokumentacja działań nowatorskich na rok 2026</p>
+            </div>
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th style="width: 30%;">Narzędzia i Metody (Kompas Jutra)</th>
+                        <th style="width: 50%;">Realizacja działań twórczych i badawczych w bieżącym tygodniu</th>
+                        <th style="width: 20%;">Data i Sygnatura</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>1. Edukacja Terenowa i Twórczość Przyrodnicza</strong></td>
+                        <td contenteditable="true">Działania warsztatowe w terenie naturalnym skorelowane z tematem bloku. Projektowanie układów przestrzennych z darów natury sprzyjające integracji sensorycznej. Czas trwania: 60+ min.</td>
+                        <td contenteditable="true">...................</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2. Myślenie Algorytmiczne (Bezekranowe)</strong></td>
+                        <td contenteditable="true">Kształtowanie logiki poprzez algorytmizację. Wykorzystanie mat przestrzennych, układanek lewopółkulowych oraz drewnianych klocków kierunkowych do "zaprogramowania" drogi rówieśnika lub obiektu.</td>
+                        <td contenteditable="true">...................</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ZAKŁADKA 5: KONSPEKT -->
+        <div id="tabLesson" class="module-view">
+             <div class="doc-header">
+                <h2>Konspekt Sytuacji Edukacyjnej (Metoda Projektów)</h2>
+                <p><strong>Zintegrowany temat badawczy:</strong> <span id="lessonTopic" contenteditable="true" style="color: #6366f1; font-weight: 700;"></span></p>
+            </div>
+            
+            <div class="grid-2col">
+                <div class="info-card">
+                    <h4>Zastosowane strategie pedagogiczne</h4>
+                    <ul contenteditable="true">
+                        <li><strong>Rusztowanie edukacyjne (Facylitacja)</strong> – nauczyciel wspiera, zachęcając dzieci do poszukiwania własnych dróg rozwiązań.</li>
+                        <li><strong>Edukacja badawcza i techniczna</strong> – swobodne testowanie założeń, manipulowanie zmiennymi, konstruowanie.</li>
+                        <li><strong>Praktyka uważności i samoregulacji</strong> – techniki oddechowe, trening radzenia sobie z trudnościami zadaniowymi.</li>
+                    </ul>
+                </div>
+                <div class="info-card">
+                    <h4>Środki dydaktyczne i materiały nieustrukturyzowane</h4>
+                    <p contenteditable="true">
+                        Surowce wtórne (tace badawcze), piktogramy emocji, maty do układania rytmów, narzędzia pomiarowe (lupy, miarki krawieckie, lejki), chusta animacyjna, odtwarzacz z muzyką o częstotliwości 432Hz.
+                    </p>
+                </div>
+            </div>
+
+            <table class="styled-table" style="margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Etap procesu projektowego</th>
+                        <th style="width: 75%;">Działania eksploracyjne „Słoneczek” i praca Nauczyciela</th>
+                    </tr>
+                </thead>
+                <tbody contenteditable="true">
+                    <tr>
+                        <td><strong>1. Dostrojenie (Uważność i Empatia)</strong></td>
+                        <td>Zgromadzenie grupy w "kręgu rozmowy". Skupienie uwagi na własnym ciele i ćwiczenie oddechowe. Nauczyciel prezentuje rekwizyt lub problem badawczy. Dzieci wyrażają swoje pierwsze odczucia.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>2. Faza Eksploracji (Działanie Badawcze)</strong></td>
+                        <td>Burza mózgów – dzieci samodzielnie stawiają hipotezy. Praca w podzespołach (2-3 os.) nad zadaniem konstrukcyjnym (praca z materiałem nieustrukturyzowanym). Nauczyciel w roli obserwatora zadaje pytania kierunkowe: „Jak myślisz, co się stanie, gdy...?”.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>3. Refleksja i Sprawczość</strong></td>
+                        <td>Prezentacja odkryć przez zespoły. Akceptacja błędów jako naturalnego i pożądanego etapu nauki (wzmacnianie odporności emocjonalnej). Podsumowanie w kręgu ze wspólnym sformułowaniem "Czego się dziś dowiedzieliśmy?".</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+    <!-- LOGIKA JS -->
+    <script>
+        const yearlyCurriculum = {
+            "Wrzesień": [
+                [ "1. Witaj w przedszkolu", "2. Poznajemy naszą salę", "3. Zasady naszej grupy", "4. Kodujemy drogę do zabawek (myślenie algorytmiczne)", "5. Sensoryczne powitanie Słoneczek (trening uważności)" ],
+                [ "1. Moja droga do przedszkola", "2. Bezpieczeństwo na drodze", "3. Pojazdy i znaki", "4. Laboratorium światła i cieni (edukacja badawcza)", "5. Konstruujemy sygnalizator świetlny (surowce wtórne)" ],
+                [ "1. Pani Jesień", "2. Dary z sadu", "3. Kolorowe liście", "4. Leśna matematyka i działania plastyczne w plenerze", "5. Eksperymenty z wiatrem i nasionami" ],
+                [ "1. Owoce i warzywa", "2. Witaminy na talerzu", "3. Jesienne zbiory", "4. Sensoryczna kuchnia: badamy smaki", "5. Kodowanie warzywnych rytmów" ]
+            ],
+            "Październik": [
+                [ "1. Jesień w parku", "2. Kasztany i żołędzie", "3. Grzyby w lesie", "4. Mali inżynierowie: wieże z kasztanów", "5. Kodowanie trasy wiewiórki po orzechy" ],
+                [ "1. Drzewa jesienią", "2. Co daje nam las?", "3. Barwy jesieni", "4. Badacze przyrody: kora drzew pod lupą", "5. Jesienny trening relaksacji i oddechu" ],
+                [ "1. Zwierzęta w lesie", "2. Kto zasypia na zimę?", "3. Lis, jeż i niedźwiedź", "4. Tworzymy makiety gawry niedźwiedzia (majsterkowanie)", "5. Ścieżka sensoryczna leśnych zwierząt" ],
+                [ "1. Jesienna pogoda", "2. Deszcz i kałuże", "3. Parasole i kalosze", "4. Mali odkrywcy: eksperymenty z wodą i deszczem", "5. Rytmy kropel deszczu: matematyka w muzyce" ]
+            ],
+            "Listopad": [
+                [ "1. Moja rodzina", "2. Dom i domownicy", "3. Obowiązki domowe", "4. Konstruktorzy przestrzeni: budujemy zamek dla rodziny", "5. Rodzinny słoik wdzięczności i emocji" ],
+                [ "1. Moja mała ojczyzna", "2. Polska to mój dom", "3. Barwy narodowe", "4. Badacze symetrii: konstruujemy flagę", "5. Mapa Polski: sensoryczne wyklejanie" ],
+                [ "1. Zdrowie i czystość", "2. Przybory toaletowe", "3. Wizyta u lekarza", "4. Laboratorium zdrowia: jak mydło usuwa bakterie?", "5. Sensoryczna mydlana piana" ],
+                [ "1. Czekamy na zimę", "2. Zwierzęta domowe", "3. Urządzenia elektryczne", "4. Maszyny z surowców wtórnych", "5. Prawa fizyki: co przyciąga magnes?" ]
+            ],
+            "Grudzień": [
+                [ "1. Czekamy na Mikołaja", "2. List do Mikołaja", "3. Fabryka zabawek", "4. Myślenie algorytmiczne: trasa reniferów na dywanie", "5. Inżynieria: most dla sań Mikołaja" ],
+                [ "1. Zima tuż tuż", "2. Śnieg i lód", "3. Ubrania na zimę", "4. Badamy topnienie lodu: edukacja badawcza", "5. Tworzymy sztuczny śnieg (działania sensoryczne)" ],
+                [ "1. Tradycje świąteczne", "2. Choinka i ozdoby", "3. Kolędy", "4. Bombki w rytmach matematycznych", "5. Warsztaty uważności: zapach i magia świąt" ],
+                [ "1. Zimowy karnawał", "2. Maski balowe", "3. Radosny czas", "4. Projektujemy stroje z folii i gazet", "5. Muzyka z butelek i szklanek (akustyka)" ]
+            ],
+            "Styczeń": [
+                [ "1. Nowy Rok", "2. Kalendarz i czas", "3. Cztery pory roku", "4. Zegar z klocków: pojęcia czasu (kodowanie)", "5. Konstruujemy klepsydrę z butelek" ],
+                [ "1. Dzień Babci i Dziadka", "2. Szacunek dla starszych", "3. Prezenty od serca", "4. Warsztaty rękodzieła tkackiego", "5. Drzewo genealogiczne: układy logiczne" ],
+                [ "1. Kosmos i planety", "2. Rakiety", "3. Księżyc i gwiazdy", "4. Baza kosmiczna: konstrukcja z kartonów", "5. Gwiezdne konstelacje z pianek i wykałaczek" ],
+                [ "1. Dokarmiamy ptaki", "2. Zwierzęta zimą", "3. Karmnik", "4. Ekologiczne kule dla ptaków (działania terenowe)", "5. Trening wyciszenia: cisza zimowego lasu" ]
+            ],
+            "Luty": [
+                [ "1. Baśnie i bajki", "2. W krainie magii", "3. Moja ulubiona książka", "4. Teatr cieni z latarką (badanie światła)", "5. Kodujemy zamek dla księżniczki" ],
+                [ "1. Muzyka wokół nas", "2. Instrumenty", "3. Koncert w przedszkolu", "4. Konstruujemy własne instrumenty z recyklingu", "5. Warsztaty relaksacyjne przy muzyce klasycznej" ],
+                [ "1. Wynalazki i technika", "2. Dawniej i dziś", "3. Środki transportu", "4. Budujemy maszynę prostą (reakcja łańcuchowa)", "5. Myślenie algorytmiczne: lot samolotu po macie" ],
+                [ "1. Żywioły", "2. Ogień i woda", "3. Ziemia i powietrze", "4. Wulkan ze sody i octu: reakcje chemiczne", "5. Sensoryczne badanie właściwości wiatru" ]
+            ],
+            "Marzec": [
+                [ "1. Przedwiośnie", "2. Zwiastuny wiosny", "3. Powroty ptaków", "4. Lornetki badaczy: z lupą szukamy pąków", "5. Trening uważności z pierwszymi promieniami słońca" ],
+                [ "1. Marcowa pogoda", "2. Wiosenne burze", "3. Tęcza", "4. Rozszczepienie światła: łapiemy tęczę pryzmatem", "5. Kodujemy pogodowe rytmy na dywanie" ],
+                [ "1. Wiosna w ogrodzie", "2. Prace porządkowe", "3. Narzędzia ogrodnicze", "4. Inżynieria ogrodowa: system nawadniania z rurek", "5. Sadzimy cebulki: codzienne obserwacje przyrodnicze" ],
+                [ "1. Zwierzęta na wsi", "2. Życie na farmie", "3. Czego dają nam zwierzęta", "4. Budujemy makietę nowoczesnej farmy", "5. Sensoryczne zagrody (siano, ziarno, wełna)" ]
+            ],
+            "Kwiecień": [
+                [ "1. Wielkanocne tradycje", "2. Pisanki i kraszanki", "3. Koszyczek wielkanocny", "4. Barwienie jajek barwnikami naturalnymi (eksperyment)", "5. Matematyczne rytmy i symetria na pisankach" ],
+                [ "1. Dzień Ziemi", "2. Dbamy o planetę", "3. Czyste środowisko", "4. Recyklingowa straż: segregacja na czas", "5. Tworzymy papier czerpany ze starych gazet" ],
+                [ "1. Tajemnice wody", "2. Rzeki i jeziora", "3. Dlaczego woda jest ważna?", "4. Doświadczenia z tonięciem i pływaniem (wyporność)", "5. Wodne tory przeszkód (właściwości płynów)" ],
+                [ "1. Książka moim przyjacielem", "2. Jak powstaje książka", "3. Biblioteka", "4. Kodowanie ilustracji baśniowych na dywanie", "5. Introligatorstwo: tworzymy własne notesy" ]
+            ],
+            "Maj": [
+                [ "1. Moja miejscowość", "2. Zabytki", "3. Flaga i godło (Majówka)", "4. Konstruowanie wieży ciśnień z klocków", "5. Spacer z kompasem po okolicy przedszkola" ],
+                [ "1. Wiosenna łąka", "2. Owady i pajęczaki", "3. Kwiaty łąkowe", "4. Budujemy hotel dla owadów (prace terenowe)", "5. Trening wyciszenia: słuchamy brzęczenia pszczół" ],
+                [ "1. Moja Mama", "2. Mój Tata", "3. Kocham Rodziców", "4. Perfumy dla Mamy z płatków kwiatów (sensoryka)", "5. Kodowanie ramki na zdjęcia dla rodziców" ],
+                [ "1. Zawody", "2. Kto nam pomaga?", "3. Praca dorosłych", "4. Tworzymy narzędzia z mas plastycznych", "5. Planowanie trasy wozu strażackiego na macie" ]
+            ],
+            "Czerwiec": [
+                [ "1. Dzień Dziecka", "2. Dzieci całego świata", "3. Moje prawa", "4. Międzynarodowe eksperymenty ze smakiem i zapachem", "5. Budujemy makietę wioski (współpraca i sprawczość)" ],
+                [ "1. Lato, lato", "2. Kolory lata", "3. Letnie owoce", "4. Edukacja badawcza: robimy owocowe lody z zamrażarki", "5. Sensoryczne plaże w kuwetach (piasek i woda)" ],
+                [ "1. Jedziemy na wakacje", "2. Podróże małe i duże", "3. Wakacyjny plecak", "4. Konstruowanie statku i weryfikacja jego wyporności", "5. Algorytmiczne planowanie wycieczki na dywanie" ],
+                [ "1. Bezpieczne wakacje", "2. Słońce i woda", "3. Pożegnanie przedszkola", "4. Kodowanie bezpieczeństwa nad wodą (rozwiązywanie problemów)", "5. Zamykamy wspomnienia: tworzenie kapsuły czasu" ]
+            ]
+        };
+
+        // SZABLONY DNI TYGODNIA - poprawiona terminologia na j. polski, dopasowana do PPWP i kompetencji kluczowych
+        const planTemplates = {
+            pn: [
+                { syt: `Rozmowa kierowana. Wprowadzenie w świat: {theme} poprzez mapowanie myśli za pomocą piktogramów.`, cel: `Rozpoznaje własne emocje. Inicjuje dyskusję i formułuje poprawne zdania.`, obszar: `Społeczny / Emocjonalny`, komp: `Osobiste i społeczne` },
+                { syt: `Trening uważności. Zaprezentowanie rekwizytu/zagadki wprowadzającej do zagadnienia: {theme}. Otwarta dyskusja i stawianie hipotez.`, cel: `Osiąga stan skupienia. Zwraca uwagę na detal, wyciąga logiczne wnioski.`, obszar: `Poznawczy`, komp: `Umiejętność uczenia się` }
+            ],
+            wt: [
+                { syt: `Edukacja badawcza. Manipulowanie, testowanie właściwości obiektów powiązanych z motywem: {theme}. Praca z narzędziami pomiarowymi.`, cel: `Wykazuje postawę badawczą. Weryfikuje pomysły drogą doświadczalną.`, obszar: `Poznawczy / Fizyczny`, komp: `Matematyczne i przyrodnicze` },
+                { syt: `Myślenie algorytmiczne. Tworzenie i odczytywanie prostych kodów ruchowych na macie w nawiązaniu do: {theme}.`, cel: `Dekoduje znaki graficzne. Planuje proces ruchowy krok po kroku.`, obszar: `Poznawczy / Fizyczny`, komp: `Cyfrowe (bezekranowe)` }
+            ],
+            sr: [
+                { syt: `Działania twórcze (materiały nieustrukturyzowane). Konstruowanie asymetrycznych form przestrzennych inspirowanych zagadnieniem: {theme}.`, cel: `Uruchamia inwencję przestrzenną. Rozwija motorykę małą i chwyt pęsetowy.`, obszar: `Fizyczny / Poznawczy`, komp: `Przedsiębiorczości (inicjatywa)` },
+                { syt: `Sytuacja zadaniowa metodą projektów. Twórcze rozwiązywanie problemu zainicjowanego przez nauczyciela wokół tematyki: {theme}.`, cel: `Negocjuje rozwiązania z rówieśnikiem. Buduje poczucie własnej sprawczości.`, obszar: `Społeczny / Poznawczy`, komp: `Osobiste i społeczne` }
+            ],
+            cz: [
+                { syt: `Edukacja terenowa (obserwacje w ogrodzie). Przeniesienie pola badawczego: {theme} w środowisko naturalne. Wykorzystanie darów natury.`, cel: `Integruje zmysły z naturą. Kształtuje postawy proekologiczne.`, obszar: `Fizyczny / Poznawczy`, komp: `Przyrodnicze` },
+                { syt: `Matematyka w działaniu. Rytmy, segregowanie i przeliczanie z użyciem zbiorów obiektów, których dotyczy: {theme}. Dostrzeganie symetrii.`, cel: `Klasyfikuje obiekty. Przelicza w zakresie dostosowanym do możliwości 4-latków.`, obszar: `Poznawczy`, komp: `Matematyczne` }
+            ],
+            pt: [
+                { syt: `Ekspresja twórcza. Swobodna interpretacja poznanego zagadnienia: {theme} poprzez intuicyjne działania plastyczne i taniec.`, cel: `Prezentuje twórczość bez oceny. Buduje odporność na błędy (rezyliencję).`, obszar: `Emocjonalny / Fizyczny`, komp: `Świadomość i ekspresja kulturalna` },
+                { syt: `Muzykoterapia i podsumowanie badawcze: {theme}. Praca z instrumentarium naturalnym. Wspólne stworzenie teczki tematycznej.`, cel: `Wyraża emocje w muzyce. Dostrzega wartość pracy zespołowej.`, obszar: `Emocjonalny / Społeczny`, komp: `Świadomość i ekspresja kulturalna` }
+            ]
+        };
+
+        const daysKeys = ['pn', 'wt', 'sr', 'cz', 'pt'];
+        const dayNames = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek'];
+
+        // GENERATORY DYNAMICZNYCH ZABAW NA BAZIE TEMATU
+        function generateDynamicLists(theme) {
+            const t = `<span class="dynamic-theme">${theme}</span>`;
+            
+            const ruchowe = [
+                `1. „Ruchowa interpretacja” - zabawa naśladowcza i trening wyciszenia. Dzieci ruchem i oddechem interpretują motyw: ${t}.`,
+                `2. „Wyścig odkrywców” - bieg orientacyjny z elementami kodowania przestrzennego. Szukamy rekwizytów powiązanych z zagadnieniem: ${t}.`,
+                `3. „Lustrzane odbicie” - zabawa w parach. Jedno dziecko pokazuje ruchy kojarzące się z dzisiejszym tematem, drugie je naśladuje, budując empatię.`,
+                `4. „Zwinne omijanie” - sensoryczny tor przeszkód, na końcu którego Słoneczka układają lub klasyfikują symbol związany z motywem: ${t}.`,
+                `5. „Zabawa orientacyjno-porządkowa (reakcja na sygnał)” - trening hamowania i kontroli impulsów. Dzieci reagują ruchem na hasła związane z: ${t}.`,
+                `6. „Taniec żywiołów” - improwizacja ruchowa z wykorzystaniem chusty animacyjnej do opowieści inspirowanej bieżącym tygodniem.`
+            ];
+
+            const powietrze = [
+                `1. „Sztuka ziemi” - tworzenie na trawie kompozycji przestrzennych z darów natury (szyszki, patyki), nawiązujących bezpośrednio do: ${t}.`,
+                `2. „Detektywi przyrody” - edukacja terenowa z użyciem lup i lornetek. Szukamy w ogrodzie śladów i połączeń z zagadnieniem: ${t}.`,
+                `3. „Konstruktorzy na świeżym powietrzu” - budowanie baz, struktur i układów w piaskownicy (rozwój wyobraźni i wytrwałości).`,
+                `4. „Plenerowy trening świadomej obserwacji” - spacer uważności, podczas którego dzieci szukają tekstur i dźwięków przypominających im: ${t}.`,
+                `5. „Eksperyment w plenerze” - badanie zjawisk fizycznych (wiatr, światło, grawitacja) i ich wpływu na obiekty omawiane w tym tygodniu.`
+            ];
+
+            const edukacyjne = [
+                `1. „Rozmowa kierowana” - tworzenie zespołowej mapy myśli na dywanie, obrazującej wszystko, co wiemy o: ${t}.`,
+                `2. „Tace badawcze (luźne elementy)” - swobodne, nieszablonowe konstruowanie modeli przestrzennych w nawiązaniu do tematu tygodnia.`,
+                `3. „Kodowanie na dywanie” - układanie logicznych sekwencji i programowanie drogi bez użycia ekranów do obiektów z obszaru: ${t}.`,
+                `4. „Edukacja badawcza i techniczna” - stawianie hipotez i sprawdzanie założeń za pomocą narzędzi, takich jak miarka, lejki czy waga.`,
+                `5. „Matematyka w przestrzeni” - klasyfikowanie zbiorów, segregowanie kolorami i kształtami elementów kojarzących się z zagadnieniem: ${t}.`,
+                `6. „Zabawy wielozmysłowe” - polisensoryczne (dotyk, węch) poznawanie i kategoryzowanie ukrytych przedmiotów powiązanych z: ${t}.`,
+                `7. „Kierowane odkrywanie (facylitacja)” - moderowana dyskusja, w której nauczyciel nie podaje gotowych rozwiązań, lecz zachęca do analizy problemu.`
+            ];
+
+            return { ruchowe, powietrze, edukacyjne };
+        }
+
+        // Inicjalizacja
+        const monthsNames = Object.keys(yearlyCurriculum);
+        
+        window.onload = () => {
+            const mSel = document.getElementById("monthSelect");
+            monthsNames.forEach(m => mSel.add(new Option(m, m)));
+            updateWeeksAndThemes();
+        };
+
+        function updateWeeksAndThemes() {
+            const wSel = document.getElementById("weekSelect");
+            wSel.innerHTML = "";
+            for (let i = 1; i <= 4; i++) {
+                wSel.add(new Option(`Tydzień ${i}`, i));
+            }
+            updateThemes();
+        }
+
+        function updateThemes() {
+            const tSel = document.getElementById("themeSelect");
+            tSel.innerHTML = "";
+            
+            const m = document.getElementById("monthSelect").value;
+            const wIdx = parseInt(document.getElementById("weekSelect").value) - 1;
+            
+            const themes = yearlyCurriculum[m][wIdx];
+            themes.forEach((t) => {
+                tSel.add(new Option(t, t));
+            });
+
+            renderData();
+        }
+
+        function renderData() {
+            const month = document.getElementById("monthSelect").value;
+            const weekIndex = parseInt(document.getElementById("weekSelect").value) - 1;
+            const themeFull = document.getElementById("themeSelect").value;
+            
+            // Usunięcie prefiksów numeracji (np. "1. ")
+            const themeClean = themeFull.replace(/^[0-9]\.\s/, '');
+
+            document.getElementById("planMonthName").textContent = month;
+            document.getElementById("planTopicName").textContent = themeClean;
+            document.getElementById("parentTopicTitle").textContent = themeClean;
+            document.getElementById("lessonTopic").textContent = themeClean;
+
+            // Generowanie Planu Dni
+            generateDynamicTable(themeClean, weekIndex);
+            
+            // Generowanie spersonalizowanych list dla konkretnego tematu
+            const dynamicLists = generateDynamicLists(themeClean);
+            renderList("planRuchoweList", dynamicLists.ruchowe);
+            renderList("planPowietrzeList", dynamicLists.powietrze);
+            renderList("planEdukacyjneList", dynamicLists.edukacyjne);
+        }
+
+        function generateDynamicTable(themeClean, weekIndex) {
+            const tbody = document.getElementById("planTableBody");
+            tbody.innerHTML = "";
+            
+            daysKeys.forEach((dayKey, index) => {
+                const templatesForDay = planTemplates[dayKey];
+                const variantIndex = (weekIndex + index) % templatesForDay.length; 
+                const selectedTpl = templatesForDay[variantIndex];
+
+                const syt = selectedTpl.syt.replace('{theme}', `<span class="dynamic-theme">${themeClean}</span>`);
+                
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td style="font-weight: bold; background: #fafafa;">${dayNames[index]}</td>
+                    <td contenteditable="true">${syt}</td>
+                    <td contenteditable="true">${selectedTpl.cel}</td>
+                    <td contenteditable="true" style="font-size:0.85em; text-align:center;">${selectedTpl.obszar}</td>
+                    <td contenteditable="true" style="font-size:0.85em; text-align:center;">${selectedTpl.komp}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderList(elementId, dataArray) {
+            const ul = document.getElementById(elementId);
+            ul.innerHTML = "";
+            dataArray.forEach((item) => {
+                const parts = item.split("” -");
+                let formattedText = item;
+                if(parts.length > 1) {
+                    formattedText = `<span class="bold-start">${parts[0]}”</span> -${parts[1]}`;
+                }
+                const li = document.createElement("li");
+                li.innerHTML = formattedText.replace(/^[0-9]+\.\s/, '');
+                li.setAttribute("contenteditable", "true");
+                ul.appendChild(li);
+            });
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.module-view').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+        }
+    </script>
+</body>
+</html>
